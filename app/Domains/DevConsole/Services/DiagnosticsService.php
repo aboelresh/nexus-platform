@@ -350,14 +350,14 @@ class DiagnosticsService
     }
 
     private function checkStorage(): array
-    {
-        $link = public_path('storage');
-        $exists = file_exists($link) && is_link($link);
-        return [
-            'status'  => $exists,
-            'message' => $exists ? 'Storage link exists' : 'Storage link missing - run php artisan storage:link',
-        ];
-    }
+{
+    $link   = public_path('storage');
+    $exists = file_exists($link);
+    return [
+        'status'  => $exists,
+        'message' => $exists ? 'Storage accessible' : 'Storage link missing - run php artisan storage:link',
+    ];
+}
 
     private function checkQueue(): array
     {
@@ -376,18 +376,29 @@ class DiagnosticsService
     }
 
     private function checkBroadcast(): array
-    {
-        try {
-            $connection = @fsockopen('localhost', 8080, $errno, $errstr, 2);
-            if ($connection) {
-                fclose($connection);
-                return ['status' => true, 'message' => 'Reverb running on port 8080'];
-            }
-            return ['status' => false, 'message' => 'Reverb not running - run php artisan reverb:start'];
-        } catch (\Exception $e) {
-            return ['status' => false, 'message' => $e->getMessage()];
+{
+    try {
+        $host       = config('reverb.servers.reverb.hostname', 'localhost');
+        $port       = config('reverb.servers.reverb.port', 8080);
+
+        $connection = @fsockopen('127.0.0.1', $port, $errno, $errstr, 2);
+
+        if ($connection) {
+            fclose($connection);
+            return ['status' => true, 'message' => "Reverb running on {$host}:{$port}"];
         }
+
+        $connection2 = @stream_socket_client("tcp://127.0.0.1:{$port}", $errno, $errstr, 2);
+        if ($connection2) {
+            fclose($connection2);
+            return ['status' => true, 'message' => "Reverb running on {$host}:{$port}"];
+        }
+
+        return ['status' => false, 'message' => "Reverb not running - run php artisan reverb:start"];
+    } catch (\Exception $e) {
+        return ['status' => false, 'message' => $e->getMessage()];
     }
+}
 
     private function checkMail(): array
     {
