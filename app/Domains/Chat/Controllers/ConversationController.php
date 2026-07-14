@@ -2,6 +2,7 @@
 
 namespace App\Domains\Chat\Controllers;
 
+use App\Domains\Chat\Events\UserTyping;
 use App\Domains\Chat\Requests\CreateConversationRequest;
 use App\Domains\Chat\Resources\ConversationResource;
 use App\Domains\Chat\Services\ConversationService;
@@ -76,5 +77,22 @@ class ConversationController extends Controller
             'message' => 'تم أرشفة المحادثة بنجاح.',
             'status'  => true,
         ]);
+    }
+
+    public function typing(Request $request, int $id): JsonResponse
+    {
+        $request->validate([
+            'is_typing' => ['required', 'boolean'],
+        ]);
+
+        $conversation = $this->conversationService->getConversation($id, $request->user());
+
+        broadcast(new UserTyping(
+            $request->user(),
+            $conversation->id,
+            $request->boolean('is_typing')
+        ))->toOthers();
+
+        return response()->json(['status' => true]);
     }
 }

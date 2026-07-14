@@ -2,6 +2,9 @@
 
 namespace App\Domains\Chat\Services;
 
+use App\Domains\Chat\Events\MessageDeleted;
+use App\Domains\Chat\Events\MessageSent;
+use App\Domains\Chat\Events\MessageUpdated;
 use App\Domains\Chat\Models\Conversation;
 use App\Domains\Chat\Models\Message;
 use App\Domains\Chat\Models\MessageRead;
@@ -58,7 +61,11 @@ class MessageService
 
         $this->markMessageAsRead($message, $sender);
 
-        return $message->load(['sender', 'replyTo.sender', 'reactions', 'reads', 'mentions']);
+        $message->load(['sender', 'replyTo.sender', 'reactions', 'reads', 'mentions']);
+
+        broadcast(new MessageSent($message))->toOthers();
+
+        return $message;
     }
 
     public function editMessage(Message $message, User $user, string $newBody): Message
@@ -75,7 +82,11 @@ class MessageService
             'edited_at' => now(),
         ]);
 
-        return $message->fresh(['sender', 'reactions', 'reads']);
+        $updated = $message->fresh(['sender', 'reactions', 'reads']);
+
+        broadcast(new MessageUpdated($updated))->toOthers();
+
+        return $updated;
     }
 
     public function deleteMessage(Message $message, User $user, Conversation $conversation): void
@@ -84,8 +95,8 @@ class MessageService
             ->where('user_id', $user->id)
             ->first();
 
-        $isOwner   = $message->isOwnedBy($user->id);
-        $isAdmin   = $participant?->isAdmin();
+        $isOwner = $message->isOwnedBy($user->id);
+        $isAdmin = $participant?->isAdmin();
 
         if (!$isOwner && !$isAdmin) {
             throw ValidationException::withMessages([
@@ -93,7 +104,12 @@ class MessageService
             ]);
         }
 
+        $messageId      = $message->id;
+        $conversationId = $message->conversation_id;
+
         $message->delete();
+
+        broadcast(new MessageDeleted($messageId, $conversationId))->toOthers();
     }
 
     public function toggleReaction(Message $message, User $user, string $emoji): array

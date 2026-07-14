@@ -2,6 +2,7 @@
 
 namespace App\Domains\Auth\Services;
 
+use App\Domains\Presence\Events\UserPresenceUpdated;
 use App\Domains\User\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
@@ -60,6 +61,8 @@ class AuthService
 
         $user->update(['presence_status' => 'online']);
 
+        broadcast(new UserPresenceUpdated($user->fresh(), 'online'));
+
         return compact('user', 'token');
     }
 
@@ -75,6 +78,8 @@ class AuthService
             'presence_status' => 'offline',
             'last_seen_at'    => now(),
         ]);
+
+        broadcast(new UserPresenceUpdated($user->fresh(), 'offline'));
     }
 
     public function verifyEmail(User $user, string $hash): bool
