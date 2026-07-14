@@ -8,7 +8,7 @@ Route::post('/broadcasting/auth', function (Request $request) {
     return Broadcast::auth($request);
 })->middleware('auth:sanctum');
 
-Route::get('/health', function () {
+Route::get('/ping', function () {
     return response()->json([
         'status'    => 'ok',
         'service'   => 'NexusPlatform API',

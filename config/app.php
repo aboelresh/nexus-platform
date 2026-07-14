@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'console_token' => env('APP_CONSOLE_TOKEN', 'nexus-dev-console-2026'),
+
 ];
