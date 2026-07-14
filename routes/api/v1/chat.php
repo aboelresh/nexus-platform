@@ -18,7 +18,14 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{messageId}', [\App\Domains\Chat\Controllers\MessageController::class, 'destroy'])->name('destroy');
             Route::post('/{messageId}/react', [\App\Domains\Chat\Controllers\MessageController::class, 'react'])->name('react');
             Route::post('/{messageId}/pin', [\App\Domains\Chat\Controllers\MessageController::class, 'pin'])->name('pin');
+            Route::get('/pinned', [\App\Domains\Chat\Controllers\MessageController::class, 'pinned'])->name('pinned');
+            Route::post('/{messageId}/forward', [\App\Domains\Chat\Controllers\MessageController::class, 'forward'])->name('forward');
         });
+    });
+
+    Route::prefix('search')->name('search.')->group(function () {
+        Route::get('/messages', [\App\Domains\Chat\Controllers\SearchController::class, 'messages'])->name('messages');
+        Route::get('/conversations', [\App\Domains\Chat\Controllers\SearchController::class, 'conversations'])->name('conversations');
     });
 
 });
