@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexusPlatform</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root[data-theme="dark"]{
+--bg:#0f1117;--bg2:#1a1d26;--bg3:#22263a;--bg4:#2a2f45;
+--border:#2e3348;--text:#e8eaf0;--text2:#8892a4;--text3:#555f72;
+--accent:#5b67f8;--accent2:#4a55e0;--green:#22c55e;--red:#ef4444;
+--yellow:#f59e0b;--bubble-out:#5b67f8;--bubble-in:#22263a;
+--bubble-out-text:#fff;--bubble-in-text:#e8eaf0;
+--shadow:0 4px 24px rgba(0,0,0,.4);
+}
+:root[data-theme="light"]{
+--bg:#f0f2f5;--bg2:#ffffff;--bg3:#f7f8fc;--bg4:#e8eaf0;
+--border:#e2e5ef;--text:#1a1d26;--text2:#555f72;--text3:#8892a4;
+--accent:#5b67f8;--accent2:#4a55e0;--green:#22c55e;--red:#ef4444;
+--yellow:#f59e0b;--bubble-out:#5b67f8;--bubble-in:#ffffff;
+--bubble-out-text:#fff;--bubble-in-text:#1a1d26;
+--shadow:0 4px 24px rgba(0,0,0,.08);
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;height:100vh;overflow:hidden}
+
+/* AUTH */
+.auth-wrap{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg)}
+.auth-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:420px;box-shadow:var(--shadow)}
+.auth-logo{text-align:center;margin-bottom:28px}
+.auth-logo h1{font-size:26px;font-weight:800;color:var(--accent)}
+.auth-logo p{color:var(--text2);font-size:13px;margin-top:4px}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:10px;padding:4px;margin-bottom:24px}
+.auth-tab{flex:1;padding:8px;border-radius:8px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.auth-tab.active{background:var(--accent);color:#fff}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600}
+.form-group input{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:14px;transition:.2s;outline:none}
+.form-group input:focus{border-color:var(--accent);background:var(--bg2)}
+.btn-primary{width:100%;background:var(--accent);color:#fff;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;margin-top:4px}
+.btn-primary:hover{background:var(--accent2)}
+.auth-err{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none}
+
+/* LAYOUT */
+.app{display:none;height:100vh;grid-template-columns:280px 1fr;grid-template-rows:100vh}
+.app.visible{display:grid}
+@media(max-width:700px){.app{grid-template-columns:1fr}.sidebar{display:none}.sidebar.mobile-open{display:flex}}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-inline-end:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.sidebar-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0}
+.sidebar-header .user-info{flex:1;min-width:0}
+.sidebar-header .user-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-header .user-status{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px}
+.sidebar-header .user-status::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block}
+.icon-btn{background:none;border:none;color:var(--text2);cursor:pointer;padding:6px;border-radius:8px;transition:.15s;font-size:16px;display:flex;align-items:center}
+.icon-btn:hover{background:var(--bg3);color:var(--text)}
+.search-wrap{padding:10px 12px;border-bottom:1px solid var(--border)}
+.search-input{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:8px 12px;border-radius:10px;font-size:13px;outline:none;transition:.2s}
+.search-input:focus{border-color:var(--accent)}
+.conv-list{flex:1;overflow-y:auto}
+.conv-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:.15s;border-bottom:1px solid var(--border)}
+.conv-item:hover{background:var(--bg3)}
+.conv-item.active{background:var(--bg4)}
+.conv-avatar{position:relative;flex-shrink:0}
+.conv-avatar .avatar{width:44px;height:44px;font-size:16px}
+.online-dot{position:absolute;bottom:1px;inset-inline-end:1px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--bg2)}
+.conv-info{flex:1;min-width:0}
+.conv-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-last{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.conv-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.conv-time{font-size:11px;color:var(--text3)}
+.unread-badge{background:var(--accent);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.new-conv-btn{margin:12px;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
+.new-conv-btn:hover{background:var(--accent2)}
+
+/* CHAT */
+.chat-area{display:flex;flex-direction:column;height:100vh;background:var(--bg)}
+.chat-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px}
+.chat-header .back-btn{display:none;background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px}
+@media(max-width:700px){.chat-header .back-btn{display:block}}
+.chat-title{font-weight:700;font-size:15px}
+.chat-subtitle{font-size:12px;color:var(--text2);margin-top:1px}
+.chat-actions{margin-inline-start:auto;display:flex;gap:4px}
+.messages-wrap{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:4px}
+.msg-group{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.msg-row{display:flex;align-items:flex-end;gap:8px}
+.msg-row.out{flex-direction:row-reverse}
+.msg-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.bubble{max-width:65%;padding:10px 14px;border-radius:18px;position:relative;word-break:break-word;line-height:1.5}
+.msg-row.in .bubble{background:var(--bubble-in);color:var(--bubble-in-text);border-end-start-radius:4px}
+.msg-row.out .bubble{background:var(--bubble-out);color:var(--bubble-out-text);border-end-end-radius:4px}
+.bubble .msg-text{font-size:14px}
+.bubble .msg-meta{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:4px}
+.bubble .msg-time{font-size:10px;opacity:.7}
+.read-icon{font-size:11px;opacity:.8}
+.reply-preview{background:rgba(0,0,0,.15);border-inline-start:3px solid rgba(255,255,255,.4);border-radius:6px;padding:6px 10px;margin-bottom:6px;font-size:12px;opacity:.85}
+.sender-name{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:2px;padding-inline-start:8px}
+.typing-indicator{display:none;align-items:center;gap:8px;padding:8px 16px;color:var(--text2);font-size:12px}
+.typing-dots span{display:inline-block;width:6px;height:6px;background:var(--text2);border-radius:50%;animation:bounce .8s infinite}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.date-divider{text-align:center;color:var(--text3);font-size:11px;margin:12px 0;display:flex;align-items:center;gap:8px}
+.date-divider::before,.date-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* INPUT */
+.input-area{background:var(--bg2);border-top:1px solid var(--border);padding:12px 16px}
+.reply-bar{background:var(--bg3);border-radius:10px;padding:8px 12px;margin-bottom:8px;display:none;align-items:center;gap:8px;border-inline-start:3px solid var(--accent)}
+.reply-bar-text{flex:1;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.input-row{display:flex;align-items:flex-end;gap:8px}
+.input-box{flex:1;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:10px 14px;border-radius:12px;font-size:14px;outline:none;resize:none;max-height:120px;min-height:42px;line-height:1.5;font-family:inherit;transition:.2s}
+.input-box:focus{border-color:var(--accent)}
+.send-btn{background:var(--accent);color:#fff;border:none;width:42px;height:42px;border-radius:12px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+.send-btn:hover{background:var(--accent2)}
+.send-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* EMPTY STATE */
+.empty-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text2);gap:12px}
+.empty-chat .icon{font-size:64px;opacity:.3}
+.empty-chat h3{font-size:18px;color:var(--text);opacity:.6}
+.empty-chat p{font-size:13px;opacity:.5;text-align:center;max-width:260px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:400px;box-shadow:var(--shadow)}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:20px}
+.modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px}
+.user-result{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;cursor:pointer;transition:.15s}
+.user-result:hover{background:var(--bg3)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;inset-inline-end:20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:200;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* THEME TOGGLE */
+.theme-toggle{position:relative;width:36px;height:20px}
+.theme-toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--bg4);border-radius:20px;cursor:pointer;transition:.3s}
+.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:var(--text2);border-radius:50%;transition:.3s}
+input:checked + .toggle-slider{background:var(--accent)}
+input:checked + .toggle-slider::before{transform:translateX(16px);background:#fff}
+</style>
+</head>
+<body>
+
+<!-- AUTH PAGE -->
+<div class="auth-wrap" id="authPage">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <h1>⚡ NexusPlatform</h1>
+      <p id="authTagline">مرحباً بك — سجّل دخولك للمتابعة</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')" id="tab-login">تسجيل الدخول</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')" id="tab-register">إنشاء حساب</button>
+    </div>
+
+    <div id="loginForm">
+      <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>كلمة المرور</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+      <button class="btn-primary" onclick="login()">تسجيل الدخول</button>
+    </div>
+
+    <div id="registerForm" style="display:none">
+      <div class="form-group"><label>الاسم الكامل</label><input type="text" id="regName" placeholder="Ahmed Mohamed"></div>
+      <div class="form-group"><label>اسم المستخدم</label><input type="text" id="regUsername" placeholder="ahmed_m"></div>
+      <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="regEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>كلمة المرور</label><input type="password" id="regPassword" placeholder="••••••••"></div>
+      <button class="btn-primary" onclick="register()">إنشاء الحساب</button>
+    </div>
+    <div class="auth-err" id="authErr"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="avatar" id="myAvatar">أ</div>
+      <div class="user-info">
+        <div class="user-name" id="myName">...</div>
+        <div class="user-status" id="myStatus">Online</div>
+      </div>
+      <label class="theme-toggle" title="Toggle Theme">
+        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+        <span class="toggle-slider"></span>
+      </label>
+      <button class="icon-btn" onclick="logout()" title="تسجيل الخروج">🚪</button>
+    </div>
+
+    <div class="search-wrap">
+      <input class="search-input" placeholder="🔍 بحث في المحادثات..." oninput="searchConvs(this.value)" id="convSearch">
+    </div>
+
+    <div class="conv-list" id="convList">
+      <div style="text-align:center;padding:30px;color:var(--text2);font-size:13px">جاري التحميل...</div>
+    </div>
+
+    <button class="new-conv-btn" onclick="openNewConvModal()">
+      ✏️ محادثة جديدة
+    </button>
+  </aside>
+
+  <!-- CHAT AREA -->
+  <main class="chat-area" id="chatArea">
+    <div class="empty-chat" id="emptyState">
+      <div class="icon">💬</div>
+      <h3>اختر محادثة</h3>
+      <p>اختر محادثة من القائمة أو ابدأ محادثة جديدة</p>
+    </div>
+
+    <div id="chatWindow" style="display:none;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <button class="back-btn" onclick="backToList()">←</button>
+        <div class="conv-avatar">
+          <div class="avatar" id="chatAvatar" style="width:38px;height:38px;font-size:15px">؟</div>
+          <div class="online-dot" id="chatOnlineDot" style="display:none"></div>
+        </div>
+        <div>
+          <div class="chat-title" id="chatName">...</div>
+          <div class="chat-subtitle" id="chatSub">...</div>
+        </div>
+        <div class="chat-actions">
+          <button class="icon-btn" onclick="refreshMessages()" title="تحديث">🔄</button>
+        </div>
+      </div>
+
+      <div class="messages-wrap" id="messagesWrap">
+        <div style="text-align:center;color:var(--text2);padding:20px">جاري تحميل الرسائل...</div>
+      </div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+        <span id="typingText">يكتب...</span>
+      </div>
+
+      <div class="input-area">
+        <div class="reply-bar" id="replyBar">
+          <span>↩️</span>
+          <span class="reply-bar-text" id="replyBarText"></span>
+          <button class="icon-btn" onclick="cancelReply()">✕</button>
+        </div>
+        <div class="input-row">
+          <textarea class="input-box" id="msgInput" placeholder="اكتب رسالة..." rows="1"
+            onkeydown="handleKey(event)"
+            oninput="autoResize(this);sendTyping(true)"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- NEW CONVERSATION MODAL -->
+<div class="modal-overlay" id="newConvModal">
+  <div class="modal">
+    <h3>✏️ محادثة جديدة</h3>
+    <div class="form-group">
+      <label>ابحث عن مستخدم</label>
+      <input type="text" id="userSearch" placeholder="اكتب اسم أو username..." oninput="searchUsers(this.value)">
+    </div>
+    <div id="userResults" style="max-height:200px;overflow-y:auto;margin-top:8px"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('newConvModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script>
+const API = '/api/v1';
+let token = localStorage.getItem('nexus_token');
+let me = JSON.parse(localStorage.getItem('nexus_user') || 'null');
+let currentConv = null;
+let replyToMsg = null;
+let pusher = null;
+let channels = {};
+let typingTimer = null;
+let convList = [];
+
+// ══════════════════════
+// HTTP Helper
+// ══════════════════════
+async function http(method, url, data) {
+  const opts = {
+    method,
+    headers: {'Accept':'application/json','Content-Type':'application/json'},
+  };
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (data) opts.body = JSON.stringify(data);
+  const r = await fetch(API + url, opts);
+  const json = await r.json();
+  if (!r.ok) throw new Error(json.message || 'خطأ في الاتصال');
+  return json;
+}
+
+const get  = (url) => http('GET', url);
+const post = (url, d) => http('POST', url, d);
+const put  = (url, d) => http('PUT', url, d);
+const del  = (url) => http('DELETE', url);
+
+// ══════════════════════
+// TOAST
+// ══════════════════════
+function toast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ══════════════════════
+// THEME
+// ══════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('nexus_theme', isDark ? 'light' : 'dark');
+}
+function initTheme() {
+  const saved = localStorage.getItem('nexus_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').checked = saved === 'light';
+}
+
+// ══════════════════════
+// AUTH
+// ══════════════════════
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('authTagline').textContent = tab === 'login' ? 'مرحباً بك — سجّل دخولك للمتابعة' : 'أنشئ حسابك الجديد';
+  document.getElementById('authErr').style.display = 'none';
+}
+
+async function login() {
+  const email    = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showAuthErr('يرجى ملء جميع الحقول'); return; }
+  try {
+    const r = await post('/auth/login', {email, password, device_name: 'Web Browser'});
+    saveSession(r.data.token, r.data.user);
+    initApp();
+  } catch(e) { showAuthErr(e.message); }
+}
+
+async function register() {
+  const name     = document.getElementById('regName').value;
+  const username = document.getElementById('regUsername').value;
+  const email    = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  if (!name || !username || !email || !password) { showAuthErr('يرجى ملء جميع الحقول'); return; }
+  try {
+    const r = await post('/auth/register', {name, username, email, password, password_confirmation: password, device_name: 'Web Browser'});
+    saveSession(r.data.token, r.data.user);
+    initApp();
+  } catch(e) { showAuthErr(e.message); }
+}
+
+async function logout() {
+  try { await post('/auth/logout'); } catch(e) {}
+  localStorage.removeItem('nexus_token');
+  localStorage.removeItem('nexus_user');
+  token = null; me = null;
+  location.reload();
+}
+
+function saveSession(t, u) {
+  token = t; me = u;
+  localStorage.setItem('nexus_token', t);
+  localStorage.setItem('nexus_user', JSON.stringify(u));
+}
+
+function showAuthErr(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ══════════════════════
+// INIT APP
+// ══════════════════════
+function initApp() {
+  document.getElementById('authPage').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('myName').textContent = me.name;
+  document.getElementById('myAvatar').textContent = me.name[0].toUpperCase();
+  loadConversations();
+  initWebSocket();
+}
+
+// ══════════════════════
+// CONVERSATIONS
+// ══════════════════════
+async function loadConversations() {
+  try {
+    const r = await get('/conversations');
+    convList = r.data || [];
+    renderConvList(convList);
+  } catch(e) { toast('خطأ في تحميل المحادثات', 'error'); }
+}
+
+function renderConvList(list) {
+  const el = document.getElementById('convList');
+  if (!list.length) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2);font-size:13px">لا توجد محادثات بعد</div>';
+    return;
+  }
+  el.innerHTML = list.map(c => {
+    const name   = c.name || 'محادثة';
+    const letter = name[0]?.toUpperCase() || '؟';
+    const last   = c.last_message?.body || 'لا توجد رسائل';
+    const time   = c.last_message_at ? formatTime(c.last_message_at) : '';
+    const unread = c.unread_count > 0 ? `<span class="unread-badge">${c.unread_count}</span>` : '';
+    const isActive = currentConv?.id === c.id ? 'active' : '';
+    return `
+      <div class="conv-item ${isActive}" onclick="openConversation(${c.id})" id="conv-${c.id}">
+        <div class="conv-avatar">
+          <div class="avatar" style="width:44px;height:44px;font-size:16px">${letter}</div>
+        </div>
+        <div class="conv-info">
+          <div class="conv-name">${esc(name)}</div>
+          <div class="conv-last">${esc(last.substring(0,40))}</div>
+        </div>
+        <div class="conv-meta">
+          <span class="conv-time">${time}</span>
+          ${unread}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function searchConvs(q) {
+  if (!q) { renderConvList(convList); return; }
+  renderConvList(convList.filter(c => (c.name||'').toLowerCase().includes(q.toLowerCase())));
+}
+
+// ══════════════════════
+// OPEN CONVERSATION
+// ══════════════════════
+async function openConversation(id) {
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('conv-' + id)?.classList.add('active');
+
+  const conv = convList.find(c => c.id === id);
+  currentConv = conv || {id};
+
+  document.getElementById('emptyState').style.display = 'none';
+  const win = document.getElementById('chatWindow');
+  win.style.display = 'flex';
+
+  document.getElementById('chatName').textContent = conv?.name || 'محادثة';
+  document.getElementById('chatSub').textContent  = conv?.type === 'direct' ? 'محادثة مباشرة' : 'مجموعة';
+  document.getElementById('chatAvatar').textContent = (conv?.name || '؟')[0].toUpperCase();
+
+  document.getElementById('messagesWrap').innerHTML = '<div style="text-align:center;color:var(--text2);padding:20px">جاري تحميل الرسائل...</div>';
+
+  loadMessages(id);
+  subscribeToConversation(id);
+
+  try { await post(`/conversations/${id}/read`, {}); } catch(e) {}
+
+  if (window.innerWidth <= 700) {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+  }
+}
+
+// ══════════════════════
+// MESSAGES
+// ══════════════════════
+async function loadMessages(convId) {
+  try {
+    const r = await get(`/conversations/${convId}/messages`);
+    const msgs = (r.data || []).reverse();
+    renderMessages(msgs);
+  } catch(e) {
+    document.getElementById('messagesWrap').innerHTML = '<div style="text-align:center;color:var(--red);padding:20px">خطأ في تحميل الرسائل</div>';
+  }
+}
+
+function renderMessages(msgs) {
+  const wrap = document.getElementById('messagesWrap');
+  if (!msgs.length) {
+    wrap.innerHTML = '<div style="text-align:center;color:var(--text2);padding:40px;font-size:13px">لا توجد رسائل — كن أول من يكتب! 👋</div>';
+    return;
+  }
+
+  let html = '';
+  let lastDate = '';
+
+  msgs.forEach((msg, i) => {
+    const isOut = msg.sender?.id === me?.id;
+    const msgDate = new Date(msg.created_at).toLocaleDateString('ar');
+
+    if (msgDate !== lastDate) {
+      html += `<div class="date-divider">${msgDate}</div>`;
+      lastDate = msgDate;
+    }
+
+    const replyHtml = msg.reply_to ? `
+      <div class="reply-preview">
+        <div style="font-weight:700;font-size:11px;opacity:.7">${esc(msg.reply_to.sender?.name || 'مجهول')}</div>
+        <div>${esc((msg.reply_to.body || '').substring(0, 60))}</div>
+      </div>` : '';
+
+    const reactions = msg.reactions?.length ? `
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">
+        ${msg.reactions.map(r => `<span style="background:var(--bg3);border-radius:10px;padding:2px 7px;font-size:12px;cursor:pointer" onclick="addReaction(${msg.id},'${r.emoji}')">${r.emoji} ${r.count}</span>`).join('')}
+      </div>` : '';
+
+    const senderName = !isOut && currentConv?.type !== 'direct' ? `<div class="sender-name">${esc(msg.sender?.name || '')}</div>` : '';
+
+    html += `
+      <div class="msg-group">
+        ${senderName}
+        <div class="msg-row ${isOut ? 'out' : 'in'}" id="msg-${msg.id}">
+          ${!isOut ? `<div class="msg-avatar">${(msg.sender?.name||'؟')[0].toUpperCase()}</div>` : ''}
+          <div class="bubble" ondblclick="setReply(${msg.id}, '${esc(msg.body||'')}')">
+            ${replyHtml}
+            <div class="msg-text">${esc(msg.body || '')}</div>
+            <div class="msg-meta">
+              <span class="msg-time">${formatTime(msg.created_at)}</span>
+              ${isOut ? `<span class="read-icon">${msg.reads_count > 1 ? '✓✓' : '✓'}</span>` : ''}
+            </div>
+          </div>
+          ${isOut ? `<div class="msg-avatar">${(me?.name||'أ')[0].toUpperCase()}</div>` : ''}
+        </div>
+        ${reactions}
+      </div>`;
+  });
+
+  wrap.innerHTML = html;
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+async function refreshMessages() {
+  if (currentConv) loadMessages(currentConv.id);
+}
+
+// ══════════════════════
+// SEND MESSAGE
+// ══════════════════════
+async function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const body  = input.value.trim();
+  if (!body || !currentConv) return;
+
+  input.value = '';
+  autoResize(input);
+
+  const data = {body};
+  if (replyToMsg) { data.reply_to_id = replyToMsg.id; cancelReply(); }
+
+  try {
+    const r = await post(`/conversations/${currentConv.id}/messages`, data);
+    appendMessage(r.data);
+    updateConvLastMsg(currentConv.id, body);
+    sendTyping(false);
+  } catch(e) { toast('خطأ في إرسال الرسالة', 'error'); }
+}
+
+function appendMessage(msg) {
+  const wrap = document.getElementById('messagesWrap');
+  const isOut = msg.sender?.id === me?.id;
+
+  const div = document.createElement('div');
+  div.className = 'msg-group';
+  div.innerHTML = `
+    <div class="msg-row ${isOut ? 'out' : 'in'}" id="msg-${msg.id}">
+      ${!isOut ? `<div class="msg-avatar">${(msg.sender?.name||'؟')[0].toUpperCase()}</div>` : ''}
+      <div class="bubble" ondblclick="setReply(${msg.id}, '${esc(msg.body||'')}')">
+        <div class="msg-text">${esc(msg.body || '')}</div>
+        <div class="msg-meta">
+          <span class="msg-time">${formatTime(msg.created_at)}</span>
+          ${isOut ? '<span class="read-icon">✓</span>' : ''}
+        </div>
+      </div>
+      ${isOut ? `<div class="msg-avatar">${(me?.name||'أ')[0].toUpperCase()}</div>` : ''}
+    </div>`;
+
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+// ══════════════════════
+// REPLY
+// ══════════════════════
+function setReply(id, text) {
+  replyToMsg = {id};
+  document.getElementById('replyBar').style.display = 'flex';
+  document.getElementById('replyBarText').textContent = text.substring(0, 60);
+  document.getElementById('msgInput').focus();
+}
+
+function cancelReply() {
+  replyToMsg = null;
+  document.getElementById('replyBar').style.display = 'none';
+}
+
+// ══════════════════════
+// REACTIONS
+// ══════════════════════
+async function addReaction(msgId, emoji) {
+  try {
+    await post(`/conversations/${currentConv.id}/messages/${msgId}/react`, {emoji});
+  } catch(e) {}
+}
+
+// ══════════════════════
+// TYPING
+// ══════════════════════
+let isTypingSent = false;
+function sendTyping(typing) {
+  if (!currentConv || !pusher) return;
+  clearTimeout(typingTimer);
+  if (typing && !isTypingSent) {
+    isTypingSent = true;
+    post(`/conversations/${currentConv.id}/typing`, {is_typing: true}).catch(()=>{});
+  }
+  if (typing) {
+    typingTimer = setTimeout(() => {
+      isTypingSent = false;
+      post(`/conversations/${currentConv.id}/typing`, {is_typing: false}).catch(()=>{});
+    }, 2000);
+  } else {
+    isTypingSent = false;
+    post(`/conversations/${currentConv.id}/typing`, {is_typing: false}).catch(()=>{});
+  }
+}
+
+// ══════════════════════
+// WEBSOCKET
+// ══════════════════════
+function initWebSocket() {
+  if (!token) return;
+  pusher = new Pusher('f2z4g861ahrhwjecgakq', {
+    wsHost: 'localhost',
+    wsPort: 8080,
+    forceTLS: false,
+    enabledTransports: ['ws'],
+    cluster: 'mt1',
+    channelAuthorization: {
+      endpoint: '/api/broadcasting/auth',
+      transport: 'ajax',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    }
+  });
+  pusher.connection.bind('connected', () => {
+    document.getElementById('myStatus').textContent = 'Online';
+  });
+  pusher.connection.bind('disconnected', () => {
+    document.getElementById('myStatus').textContent = 'Offline';
+  });
+}
+
+function subscribeToConversation(convId) {
+  if (!pusher) return;
+  if (channels[convId]) return;
+
+  const ch = pusher.subscribe('private-conversation.' + convId);
+  channels[convId] = ch;
+
+  ch.bind('message.sent', (data) => {
+    if (data.message.sender?.id !== me?.id) {
+      appendMessage(data.message);
+      updateConvLastMsg(convId, data.message.body);
+      post(`/conversations/${convId}/read`, {}).catch(()=>{});
+    }
+  });
+
+  ch.bind('message.updated', (data) => {
+    const el = document.getElementById('msg-' + data.message.id);
+    if (el) {
+      el.querySelector('.msg-text').textContent = data.message.body;
+    }
+  });
+
+  ch.bind('message.deleted', (data) => {
+    const el = document.getElementById('msg-' + data.message_id);
+    if (el) el.closest('.msg-group')?.remove();
+  });
+
+  ch.bind('user.typing', (data) => {
+    if (data.user_id === me?.id) return;
+    const indicator = document.getElementById('typingIndicator');
+    const text      = document.getElementById('typingText');
+    if (data.is_typing) {
+      text.textContent = `${data.name} يكتب...`;
+      indicator.style.display = 'flex';
+    } else {
+      indicator.style.display = 'none';
+    }
+  });
+}
+
+function updateConvLastMsg(convId, body) {
+  const item = document.getElementById('conv-' + convId);
+  if (item) {
+    const lastEl = item.querySelector('.conv-last');
+    if (lastEl) lastEl.textContent = body?.substring(0, 40) || '';
+  }
+}
+
+// ══════════════════════
+// NEW CONVERSATION
+// ══════════════════════
+function openNewConvModal() {
+  document.getElementById('newConvModal').classList.add('open');
+  document.getElementById('userSearch').value = '';
+  document.getElementById('userResults').innerHTML = '';
+  setTimeout(() => document.getElementById('userSearch').focus(), 100);
+}
+
+async function searchUsers(q) {
+  if (q.length < 2) { document.getElementById('userResults').innerHTML = ''; return; }
+  try {
+    const r = await get(`/users/search?q=${encodeURIComponent(q)}`);
+    const users = r.data || [];
+    document.getElementById('userResults').innerHTML = users.length ?
+      users.map(u => `
+        <div class="user-result" onclick="startDirectConv(${u.id})">
+          <div class="avatar" style="width:36px;height:36px;font-size:14px">${u.name[0].toUpperCase()}</div>
+          <div>
+            <div style="font-weight:600;font-size:13px">${esc(u.name)}</div>
+            <div style="font-size:11px;color:var(--text2)">@${esc(u.username)}</div>
+          </div>
+        </div>
+      `).join('') :
+      '<div style="text-align:center;padding:16px;color:var(--text2);font-size:13px">لا نتائج</div>';
+  } catch(e) {}
+}
+
+async function startDirectConv(userId) {
+  closeModal('newConvModal');
+  try {
+    const r = await post('/conversations', {type: 'direct', user_id: userId});
+    await loadConversations();
+    openConversation(r.data.id);
+    toast('تم إنشاء المحادثة', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ══════════════════════
+// HELPERS
+// ══════════════════════
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function backToList() { document.getElementById('sidebar').classList.add('mobile-open'); }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function formatTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleTimeString('ar', {hour:'2-digit', minute:'2-digit'});
+}
+
+// ══════════════════════
+// BOOT
+// ══════════════════════
+initTheme();
+if (token && me) {
+  initApp();
+} else {
+  document.getElementById('authPage').style.display = 'flex';
+}
+</script>
+</body>
+</html>
