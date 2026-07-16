@@ -22,4 +22,5 @@ Route::prefix('v1')->name('v1.')->group(function () {
     require __DIR__ . '/api/v1/users.php';
     require __DIR__ . '/api/v1/chat.php';
     require __DIR__ . '/api/v1/media.php';
+    require __DIR__ . '/api/v1/groups.php';
 });
