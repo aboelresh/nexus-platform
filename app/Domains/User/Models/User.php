@@ -92,4 +92,9 @@ class User extends Authenticatable implements Auditable
         if (!$this->avatar) return null;
         return asset('storage/' . $this->avatar);
     }
+
+    public function groupMembers()
+   {
+    return $this->hasMany(\App\Domains\Group\Models\GroupMember::class);
+   }
 }

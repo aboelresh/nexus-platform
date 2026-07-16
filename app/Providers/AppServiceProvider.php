@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,14 +20,17 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Model::preventLazyLoading(! app()->isProduction());
-
-        Model::preventSilentlyDiscardingAttributes(! app()->isProduction());
-
+        Model::preventLazyLoading(!app()->isProduction());
+        Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
         JsonResource::withoutWrapping();
 
         if (app()->isProduction()) {
             URL::forceScheme('https');
         }
+
+        Event::listen(
+            \App\Domains\Chat\Events\MessageSent::class,
+            \App\Domains\Notification\Listeners\SendMessageNotificationListener::class
+        );
     }
 }
