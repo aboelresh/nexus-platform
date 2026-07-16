@@ -59,7 +59,7 @@ class GroupService
             }
         }
 
-        return $group->load(['owner', 'members.user', 'activeMembers.user']);
+        return $group->load(['owner', 'members.user', 'members.invitedBy', 'activeMembers.user']);
     }
 
     public function update(Group $group, User $user, array $data): Group
