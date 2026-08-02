@@ -23,9 +23,9 @@ class MessageService
         }
 
         return Message::where('conversation_id', $conversation->id)
-            ->with(['sender', 'replyTo.sender', 'reactions.user', 'reads', 'mentions'])
-            ->latest()
-            ->paginate($perPage);
+    ->with(['sender', 'replyTo.sender', 'reactions.user', 'reads', 'mentions', 'media'])
+    ->latest()
+    ->paginate($perPage);
     }
 
     public function sendMessage(Conversation $conversation, User $sender, array $data): Message
@@ -58,10 +58,15 @@ class MessageService
         }
 
         $conversation->update(['last_message_at' => now()]);
+        if (!empty($data['media_ids'])) {
+    \App\Domains\Media\Models\Media::whereIn('id', $data['media_ids'])
+        ->where('user_id', $sender->id)
+        ->update(['message_id' => $message->id]);
+}
 
         $this->markMessageAsRead($message, $sender);
 
-        $message->load(['sender', 'replyTo.sender', 'reactions', 'reads', 'mentions']);
+        $message->load(['sender', 'replyTo.sender', 'reactions', 'reads', 'mentions', 'media']);
 
         broadcast(new MessageSent($message))->toOthers();
 
@@ -82,7 +87,7 @@ class MessageService
             'edited_at' => now(),
         ]);
 
-        $updated = $message->fresh(['sender', 'reactions', 'reads']);
+        $updated = $message->fresh(['sender', 'reactions', 'reads', 'mentions', 'media']);
 
         broadcast(new MessageUpdated($updated))->toOthers();
 

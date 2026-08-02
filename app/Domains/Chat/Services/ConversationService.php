@@ -10,15 +10,15 @@ use Illuminate\Validation\ValidationException;
 class ConversationService
 {
     public function getUserConversations(User $user)
-    {
-        return Conversation::whereHas('participants', fn($q) => $q->where('user_id', $user->id))
-            ->with([
-                'participants.user',
-                'lastMessage.sender',
-            ])
-            ->orderByDesc('last_message_at')
-            ->paginate(20);
-    }
+{
+    return Conversation::whereHas('participants', fn($q) => $q->where('user_id', $user->id))
+        ->with([
+            'participants.user',
+            'lastMessage.sender',
+        ])
+        ->orderByDesc('last_message_at')
+        ->paginate(20);
+}
 
     public function createDirect(User $creator, int $targetUserId): Conversation
     {
@@ -53,7 +53,7 @@ class ConversationService
             ['user_id' => $targetUserId, 'role' => 'member'],
         ]);
 
-        return $conversation->load('participants.user');
+        return $conversation->load(['participants.user', 'lastMessage']);
     }
 
     public function createGroup(User $creator, array $data): Conversation
@@ -75,7 +75,7 @@ class ConversationService
 
         $this->addParticipants($conversation, $participants);
 
-        return $conversation->load('participants.user');
+        return $conversation->load(['participants.user', 'lastMessage.sender']);
     }
 
     public function getConversation(int $conversationId, User $user): Conversation

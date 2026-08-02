@@ -11,7 +11,12 @@ class ConversationResource extends JsonResource
     public function toArray(Request $request): array
     {
         $viewer      = $request->user();
-        $participant = $this->participants->firstWhere('user_id', $viewer?->id);
+        $participant = null;
+
+        if ($viewer && $this->relationLoaded('participants')) {
+            $participant = $this->participants
+                ->firstWhere('user_id', $viewer->id);
+        }
 
         return [
             'id'              => $this->id,
@@ -20,14 +25,25 @@ class ConversationResource extends JsonResource
             'avatar'          => $this->getAvatarForViewer($viewer),
             'is_archived'     => $this->is_archived,
             'last_message_at' => $this->last_message_at?->toISOString(),
-            'last_message'    => new MessageResource($this->whenLoaded('lastMessage')),
-            'participants'    => UserResource::collection($this->whenLoaded('activeParticipants')),
+            'last_message'    => $this->whenLoaded('lastMessage', fn() =>
+                new MessageResource($this->lastMessage)
+            ),
+            'participants'    => $this->whenLoaded('participants', fn() =>
+                $this->participants->map(fn($p) => [
+                    'user_id'  => $p->user_id,
+                    'role'     => $p->role,
+                    'name'     => $this->relationLoaded('participants') && $p->relationLoaded('user')
+                        ? $p->user?->name
+                        : null,
+                    'avatar'   => $this->relationLoaded('participants') && $p->relationLoaded('user')
+                        ? $p->user?->avatar_url
+                        : null,
+                    'is_muted' => $p->isMuted(),
+                ])
+            ),
             'my_role'         => $participant?->role,
             'is_muted'        => $participant?->isMuted() ?? false,
-            'unread_count'    => $this->whenLoaded('messages', function () use ($participant) {
-                if (!$participant?->last_read_at) return $this->messages->count();
-                return $this->messages->where('created_at', '>', $participant->last_read_at)->count();
-            }),
+            'unread_count'    => 0,
             'created_at'      => $this->created_at->toISOString(),
         ];
     }
@@ -36,23 +52,27 @@ class ConversationResource extends JsonResource
     {
         if ($this->type !== 'direct') return $this->name;
         if (!$viewer) return null;
+        if (!$this->relationLoaded('participants')) return null;
 
-        $otherParticipant = $this->participants
-            ->where('user_id', '!=', $viewer->id)
-            ->first();
+        $other = $this->participants
+            ->firstWhere('user_id', '!=', $viewer->id);
 
-        return $otherParticipant?->user?->name;
+        if (!$other || !$other->relationLoaded('user')) return null;
+
+        return $other->user?->name;
     }
 
     private function getAvatarForViewer($viewer): ?string
     {
         if ($this->type !== 'direct') return $this->avatar;
         if (!$viewer) return null;
+        if (!$this->relationLoaded('participants')) return null;
 
-        $otherParticipant = $this->participants
-            ->where('user_id', '!=', $viewer->id)
-            ->first();
+        $other = $this->participants
+            ->firstWhere('user_id', '!=', $viewer->id);
 
-        return $otherParticipant?->user?->avatar_url;
+        if (!$other || !$other->relationLoaded('user')) return null;
+
+        return $other->user?->avatar_url;
     }
 }

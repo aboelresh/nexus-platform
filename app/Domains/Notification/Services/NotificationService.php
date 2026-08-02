@@ -121,18 +121,20 @@ class NotificationService
     }
 
     public function getNotificationStats(User $user): array
-    {
-        return [
-            'total'   => $user->notifications()->count(),
-            'unread'  => $user->unreadNotifications()->count(),
-            'by_type' => DB::table('notifications')
-                ->where('notifiable_id', $user->id)
-                ->where('notifiable_type', User::class)
-                ->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.type')) as type, COUNT(*) as count")
-                ->groupBy('type')
-                ->get()
-                ->pluck('count', 'type')
-                ->toArray(),
-        ];
-    }
+{
+    $byType = DB::table('notifications')
+        ->where('notifiable_id', $user->id)
+        ->where('notifiable_type', User::class)
+        ->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.type')) as type, COUNT(*) as count")
+        ->groupBy(DB::raw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.type'))"))
+        ->get()
+        ->pluck('count', 'type')
+        ->toArray();
+
+    return [
+        'total'   => $user->notifications()->count(),
+        'unread'  => $user->unreadNotifications()->count(),
+        'by_type' => $byType,
+    ];
+}
 }

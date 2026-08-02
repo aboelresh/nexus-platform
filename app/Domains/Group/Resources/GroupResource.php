@@ -37,9 +37,9 @@ class GroupResource extends JsonResource
                 'can_manage_members'  => $member->canManageMembers(),
                 'can_manage_settings' => $member->canManageSettings(),
             ] : null,
-            'members'        => $this->whenLoaded('activeMembers', fn() =>
-                GroupMemberResource::collection($this->activeMembers)
-            ),
+            'members' => $this->whenLoaded('members', fn() =>
+    GroupMemberResource::collection($this->members)
+),
             'created_at'     => $this->created_at->toISOString(),
         ];
     }

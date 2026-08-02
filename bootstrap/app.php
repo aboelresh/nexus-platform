@@ -24,11 +24,33 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
     $exceptions->render(function (\Throwable $e, Request $request) {
-        if ($request->is('api/*') && !$request->is('console/*')) {
-            return response()->json([
+        if ($request->is('api/*')) {
+            $statusCode = 500;
+
+            if (method_exists($e, 'getStatusCode')) {
+                $statusCode = $e->getStatusCode();
+            } elseif ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                $statusCode = 401;
+            } elseif ($e instanceof \Illuminate\Validation\ValidationException) {
+                $statusCode = 422;
+            } elseif ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                $statusCode = 404;
+            } elseif ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                $statusCode = 404;
+            } elseif ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                $statusCode = $e->getStatusCode();
+            }
+
+            $response = [
                 'message' => $e->getMessage(),
                 'status'  => false,
-            ], method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500);
+            ];
+
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                $response['errors'] = $e->errors();
+            }
+
+            return response()->json($response, $statusCode);
         }
     });
 })->create();

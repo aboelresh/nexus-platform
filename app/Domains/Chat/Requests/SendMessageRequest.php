@@ -18,9 +18,9 @@ class SendMessageRequest extends FormRequest
             'type'              => ['sometimes', 'string', 'in:text,image,video,audio,document,voice'],
             'reply_to_id'       => ['sometimes', 'nullable', 'integer', 'exists:messages,id'],
             'forwarded_from_id' => ['sometimes', 'nullable', 'integer', 'exists:messages,id'],
-            'media_ids'         => ['required_without:body', 'nullable', 'array'],
-            'media_ids.*'       => ['integer', 'exists:media,id'],
-            'mentions'          => ['sometimes', 'array'],
+            'media_ids'         => ['sometimes', 'nullable', 'array'],
+            'media_ids.*'       => ['integer', 'exists:media,id'],    
+            'mentions'          => ['sometimes', 'array'], 
             'mentions.*'        => ['integer', 'exists:users,id'],
         ];
     }

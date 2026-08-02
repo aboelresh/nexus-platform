@@ -61,6 +61,16 @@ class MessageSent implements ShouldBroadcast
                     ])->values()->toArray(),
                 'reads_count'     => $message->reads->count(),
                 'mentions'        => $message->mentions->pluck('user_id')->toArray(),
+                'media' => $message->media->map(fn($m) => [
+    'id'            => $m->id,
+    'type'          => $m->type,
+    'url'           => $m->url,
+    'thumbnail_url' => $m->thumbnail_url,
+    'original_name' => $m->original_name,
+    'mime_type'     => $m->mime_type,
+    'size'          => $m->size,
+    'duration'      => $m->duration,
+])->toArray(),
                 'created_at'      => $message->created_at->toISOString(),
             ],
         ];

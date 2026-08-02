@@ -1,59 +1,202 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# ⚡ NexusPlatform
 
-## About Laravel
+**Enterprise Real-Time Communication Platform**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
+[![Redis](https://img.shields.io/badge/Redis-7.x-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
+[![WebSocket](https://img.shields.io/badge/WebSocket-Reverb-6C47FF?style=for-the-badge)](https://laravel.com/docs/reverb)
+[![License](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+*A production-ready, feature-rich backend for enterprise communication — built with Domain-Driven Design.*
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+</div>
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 📖 Overview
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+NexusPlatform is a **full-featured enterprise communication backend** built with Laravel 12, following Domain-Driven Design principles. It powers real-time messaging, voice/video calls, group management, and notifications — all through a clean, versioned REST API.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## ✨ Features
 
-### Premium Partners
+### 💬 Messaging
+- Real-time direct & group messaging via WebSockets
+- Message reactions, replies, forwarding, pinning
+- Read receipts & typing indicators
+- Soft delete with real-time propagation
+- Full-text message search
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 👥 Groups
+- Role-based access: Owner → Admin → Moderator → Member
+- Invitation system with expiring tokens
+- Join requests with admin approval flow
+- Per-group mute, ban, and kick controls
+- Configurable group settings & permissions
 
-## Contributing
+### 📁 Media
+- Image upload with automatic WebP conversion & thumbnails
+- Voice messages, documents, and video support
+- MIME-type validation (not just extension)
+- Per-type size limits
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 📞 Calls
+- Voice & video call initiation
+- WebRTC signaling relay (Offer / Answer / ICE)
+- Call history with duration tracking
+- Reject / miss / end states
 
-## Code of Conduct
+### 🔔 Notifications
+- In-app, email, and broadcast (WebSocket) channels
+- Per-user notification preferences
+- Mention, invitation, and join-request alerts
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 🔐 Security
+- Token-based auth via Laravel Sanctum
+- Multi-device session management
+- Block & mute users
+- Privacy settings (last seen, profile photo, DMs)
 
-## Security Vulnerabilities
+### 🛠️ Developer Console
+- Built-in diagnostics dashboard at `/devtools`
+- Health checks: DB, Redis, Queue, Reverb, Storage
+- System Doctor with auto-fix suggestions
+- Queue monitor, Redis stats, Log viewer, API Playground
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🧰 Tech Stack
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Layer | Technology |
+|---|---|
+| Framework | Laravel 12 |
+| Language | PHP 8.2+ |
+| Database | MySQL / MariaDB |
+| Cache & Queue | Redis (Predis) |
+| WebSocket | Laravel Reverb |
+| Auth | Laravel Sanctum |
+| Roles | Spatie Permission |
+| Images | Intervention Image |
+| Audit | Laravel Auditing |
+| Debugging | Laravel Telescope |
+
+---
+
+## 📋 Requirements
+
+- PHP >= 8.2 with extensions: `pdo`, `mbstring`, `openssl`, `gd`, `curl`
+- MySQL >= 8.0 or MariaDB >= 10.4
+- Redis >= 6.0
+- Composer >= 2.x
+
+---
+
+## 🚀 Installation
+
+**1. Clone & install:**
+```bash
+git clone https://github.com/yourusername/nexus-platform.git
+cd nexus-platform
+composer install
+```
+
+**2. Environment:**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+**3. Configure `.env`:**
+```env
+DB_DATABASE=nexus_platform
+DB_USERNAME=root
+DB_PASSWORD=
+
+CACHE_STORE=redis
+QUEUE_CONNECTION=database
+REDIS_CLIENT=predis
+
+BROADCAST_CONNECTION=reverb
+REVERB_APP_ID=your-app-id
+REVERB_APP_KEY=your-app-key
+REVERB_APP_SECRET=your-app-secret
+REVERB_HOST=localhost
+REVERB_PORT=8080
+
+APP_CONSOLE_TOKEN=your-secure-token
+```
+
+**4. Database:**
+```bash
+php artisan migrate
+php artisan storage:link
+```
+
+---
+
+## ▶️ Running
+
+Open **3 terminals**:
+
+```bash
+# Terminal 1 — API Server
+php artisan serve
+
+# Terminal 2 — Queue Worker
+php artisan queue:work --tries=3
+
+# Terminal 3 — WebSocket Server
+php artisan reverb:start --debug
+```
+
+API available at: `http://localhost:8000/api/v1`
+
+---
+
+## 🧪 Testing
+
+Import `NexusPlatform.postman_collection.json` into Postman.
+
+**Start with:**
+1. `Login Ahmed` → token saves automatically
+2. `Login Sara` → token_sara saves automatically
+3. Run requests in order — all variables auto-save
+
+**Results: 76 requests / 200+ tests — all passing ✅**
+
+---
+
+## 🛠️ Developer Console
+
+http://localhost:8000/devtools?token=your-console-token
+
+
+---
+
+## 📚 Documentation
+
+| File | Contents |
+|---|---|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System design, flows, domain map |
+| [WEBSOCKETS.md](WEBSOCKETS.md) | Reverb setup, channels, events |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Production setup, Nginx, Supervisor |
+| [TESTING.md](TESTING.md) | Postman collection, test guide |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
+| [CHANGELOG.md](CHANGELOG.md) | Version history |
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE)
+
+---
+
+<div align="center">
+Built by Eng\Ahmed Saad using Laravel 12 • PHP 8.2 • Redis • WebSockets
+</div>

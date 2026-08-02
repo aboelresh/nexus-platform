@@ -13,36 +13,34 @@ class NotificationController extends Controller
         private NotificationService $notificationService
     ) {}
 
-    public function index(Request $request): JsonResponse
-    {
-        $request->validate([
-            'unread_only' => ['sometimes', 'boolean'],
-            'per_page'    => ['sometimes', 'integer', 'min:5', 'max:50'],
-        ]);
+public function index(Request $request): JsonResponse
+{
+    $perPage    = (int) $request->input('per_page', 20);
+    $unreadOnly = filter_var($request->input('unread_only', false), FILTER_VALIDATE_BOOLEAN);
 
-        $notifications = $this->notificationService->getUserNotifications(
-            $request->user(),
-            $request->boolean('unread_only', false),
-            $request->integer('per_page', 20)
-        );
+    $notifications = $this->notificationService->getUserNotifications(
+        $request->user(),
+        $unreadOnly,
+        $perPage
+    );
 
-        return response()->json([
-            'status' => true,
-            'data'   => $notifications->map(fn($n) => [
-                'id'         => $n->id,
-                'type'       => $n->type,
-                'data'       => $n->data,
-                'read_at'    => $n->read_at?->toISOString(),
-                'created_at' => $n->created_at->toISOString(),
-            ]),
-            'meta'   => [
-                'current_page' => $notifications->currentPage(),
-                'last_page'    => $notifications->lastPage(),
-                'total'        => $notifications->total(),
-                'unread_count' => $this->notificationService->getUnreadCount($request->user()),
-            ],
-        ]);
-    }
+    return response()->json([
+        'status' => true,
+        'data'   => $notifications->map(fn($n) => [
+            'id'         => $n->id,
+            'type'       => $n->type,
+            'data'       => $n->data,
+            'read_at'    => $n->read_at?->toISOString(),
+            'created_at' => $n->created_at->toISOString(),
+        ]),
+        'meta'   => [
+            'current_page' => $notifications->currentPage(),
+            'last_page'    => $notifications->lastPage(),
+            'total'        => $notifications->total(),
+            'unread_count' => $this->notificationService->getUnreadCount($request->user()),
+        ],
+    ]);
+}
 
     public function stats(Request $request): JsonResponse
     {

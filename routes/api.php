@@ -24,4 +24,5 @@ Route::prefix('v1')->name('v1.')->group(function () {
     require __DIR__ . '/api/v1/media.php';
     require __DIR__ . '/api/v1/groups.php';
     require __DIR__ . '/api/v1/notifications.php';
+    require __DIR__ . '/api/v1/calls.php';
 });

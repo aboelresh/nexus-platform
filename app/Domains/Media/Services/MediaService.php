@@ -14,9 +14,27 @@ class MediaService
     private array $allowedTypes = [
         'image'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
         'video'    => ['video/mp4', 'video/mpeg', 'video/quicktime', 'video/webm'],
-        'audio'    => ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4'],
+        'voice' => [
+    'audio/mpeg',
+    'audio/wav',
+    'audio/ogg',
+    'audio/webm',
+    'audio/mp4',
+    'audio/aac',
+    'video/mp4',
+    'application/octet-stream',
+],
+'audio' => [
+    'audio/mpeg',
+    'audio/wav',
+    'audio/ogg',
+    'audio/mp4',
+    'audio/aac',
+    'video/mp4',
+    'application/octet-stream',
+],
         'document' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'text/plain'],
-        'voice'    => ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/webm'],
+
     ];
 
     private array $maxSizes = [

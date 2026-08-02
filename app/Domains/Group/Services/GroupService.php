@@ -15,7 +15,7 @@ class GroupService
     public function getUserGroups(User $user)
     {
         return Group::whereHas('members', fn($q) => $q->where('user_id', $user->id))
-            ->with(['owner', 'members'])
+            ->with(['owner', 'members.user'])
             ->withCount('members')
             ->latest()
             ->paginate(20);
@@ -59,7 +59,7 @@ class GroupService
             }
         }
 
-        return $group->load(['owner', 'members.user', 'members.invitedBy', 'activeMembers.user']);
+        return $group->load(['owner', 'members.user']);
     }
 
     public function update(Group $group, User $user, array $data): Group
@@ -98,7 +98,7 @@ class GroupService
 
     public function getGroup(int $groupId, User $user): Group
     {
-        $group = Group::with(['owner', 'members.user', 'activeMembers.user'])->findOrFail($groupId);
+        $group = Group::with(['owner', 'members.user'])->findOrFail($groupId);
 
         if ($group->type !== 'public' && !$group->hasMember($user->id)) {
             throw ValidationException::withMessages([

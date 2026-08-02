@@ -1,0 +1,1244 @@
+{
+  "info": {
+    "name": "NexusPlatform API - Complete",
+    "description": "## 🚀 NexusPlatform Complete API Collection\n\n### قبل البدء:\n1. تأكد إن `php artisan serve` شغال\n2. تأكد إن `php artisan queue:work` شغال\n3. تأكد إن `php artisan reverb:start` شغال\n4. ابدأ بـ **01. Login as Ahmed** عشان الـ token يتحفظ تلقائياً\n\n### الـ Variables:\n- `base_url` = http://localhost:8000/api/v1\n- `token` = بيتحفظ تلقائياً بعد Login\n- `token_sara` = بيتحفظ تلقائياً بعد Login Sara\n- `conversation_id` = بيتحفظ تلقائياً\n- `message_id` = بيتحفظ تلقائياً\n- `group_id` = بيتحفظ تلقائياً\n- `call_id` = بيتحفظ تلقائياً",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:8000/api/v1"},
+    {"key": "token", "value": ""},
+    {"key": "token_sara", "value": ""},
+    {"key": "conversation_id", "value": "1"},
+    {"key": "message_id", "value": "1"},
+    {"key": "group_id", "value": "1"},
+    {"key": "call_id", "value": "1"},
+    {"key": "media_id", "value": "1"},
+    {"key": "notification_id", "value": ""},
+    {"key": "invite_token", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "🔐 01 - Auth",
+      "item": [
+        {
+          "name": "01. Register Ahmed (Skip if exists)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "if (pm.response.code === 201) {",
+            "  const r = pm.response.json();",
+            "  pm.collectionVariables.set('token', r.data.token);",
+            "  pm.test('✅ Register OK', () => pm.expect(r.status).to.be.true);",
+            "}"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"name\": \"Ahmed Developer\",\n    \"username\": \"ahmed_test\",\n    \"email\": \"ahmed@test.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"device_name\": \"Postman\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"]},
+            "description": "⚠️ لو الحساب موجود هيرجع error - اكمل للـ Login"
+          }
+        },
+        {
+          "name": "02. Login Ahmed ⭐ (ابدأ من هنا)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "if (r.status && r.data.token) {",
+            "  pm.collectionVariables.set('token', r.data.token);",
+            "  pm.test('✅ Login OK - Token saved', () => pm.expect(r.data.token).to.not.be.empty);",
+            "  console.log('Ahmed Token:', r.data.token);",
+            "} else {",
+            "  pm.test('❌ Login Failed', () => pm.expect(r.status).to.be.true);",
+            "}"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"email\": \"ahmed@test.com\",\n    \"password\": \"password123\",\n    \"device_name\": \"Postman-Ahmed\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"]},
+            "description": "✅ المتوقع: token يتحفظ تلقائياً في المتغير `token`"
+          }
+        },
+        {
+          "name": "03. Login Sara ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "if (r.status && r.data.token) {",
+            "  pm.collectionVariables.set('token_sara', r.data.token);",
+            "  pm.test('✅ Sara Login OK - Token saved', () => pm.expect(r.data.token).to.not.be.empty);",
+            "  console.log('Sara Token:', r.data.token);",
+            "}"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"email\": \"sara@test.com\",\n    \"password\": \"password123\",\n    \"device_name\": \"Postman-Sara\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"]},
+            "description": "✅ المتوقع: token_sara يتحفظ تلقائياً"
+          }
+        },
+        {
+          "name": "04. Get Me (Ahmed)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Get Me OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has user data', () => pm.expect(r.data.email).to.equal('ahmed@test.com'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"]},
+            "description": "✅ المتوقع: بيانات Ahmed"
+          }
+        },
+        {
+          "name": "05. Get Active Sessions",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Sessions OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has sessions', () => pm.expect(r.data).to.be.an('array').that.is.not.empty);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/auth/sessions", "host": ["{{base_url}}"], "path": ["auth", "sessions"]},
+            "description": "✅ المتوقع: قائمة بالـ devices المتصلة"
+          }
+        },
+        {
+          "name": "06. Change Password (then revert)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Password Changed', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"current_password\": \"password123\",\n    \"password\": \"newpassword123\",\n    \"password_confirmation\": \"newpassword123\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/change-password", "host": ["{{base_url}}"], "path": ["auth", "change-password"]},
+            "description": "✅ المتوقع: تغيير كلمة المرور + revoke للـ sessions التانية\n⚠️ بعدها اعمل Login تاني بالباسورد الجديد"
+          }
+        },
+        {
+          "name": "07. Login Ahmed (after password change)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "if (r.status) pm.collectionVariables.set('token', r.data.token);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"email\": \"ahmed@test.com\",\n    \"password\": \"newpassword123\",\n    \"device_name\": \"Postman-Ahmed\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"]},
+            "description": "Login بالباسورد الجديد"
+          }
+        },
+        {
+          "name": "08. Revert Password to original",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Password Reverted', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"current_password\": \"newpassword123\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/change-password", "host": ["{{base_url}}"], "path": ["auth", "change-password"]},
+            "description": "رجّع الباسورد الأصلي"
+          }
+        },
+        {
+          "name": "09. Login Ahmed (final)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "if (r.status) pm.collectionVariables.set('token', r.data.token);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"email\": \"ahmed@test.com\",\n    \"password\": \"password123\",\n    \"device_name\": \"Postman-Ahmed\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 02 - User Profile",
+      "item": [
+        {
+          "name": "01. Get My Profile",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Profile OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has privacy_settings', () => pm.expect(r.data).to.have.property('privacy_settings'));",
+            "pm.test('✅ Has notification_preferences', () => pm.expect(r.data).to.have.property('notification_preferences'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/users/profile", "host": ["{{base_url}}"], "path": ["users", "profile"]},
+            "description": "✅ المتوقع: كل بيانات الـ profile + privacy + notifications"
+          }
+        },
+        {
+          "name": "02. Update Profile",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Update OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Bio updated', () => pm.expect(r.data.bio).to.equal('Backend Engineer | Laravel & PHP'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"name\": \"Ahmed Developer\",\n    \"bio\": \"Backend Engineer | Laravel & PHP\",\n    \"phone\": \"+201234567890\"\n}"},
+            "url": {"raw": "{{base_url}}/users/profile", "host": ["{{base_url}}"], "path": ["users", "profile"]},
+            "description": "✅ المتوقع: profile محدث"
+          }
+        },
+        {
+          "name": "03. Update Status",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Status Updated', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ presence_status is busy', () => pm.expect(r.data.presence_status).to.equal('busy'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"custom_status\": \"في العمل 💻\",\n    \"presence_status\": \"busy\"\n}"},
+            "url": {"raw": "{{base_url}}/users/status", "host": ["{{base_url}}"], "path": ["users", "status"]},
+            "description": "✅ المتوقع: custom_status + presence_status محدثين"
+          }
+        },
+        {
+          "name": "04. Update Privacy Settings",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Privacy Updated', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"last_seen\": \"contacts\",\n    \"profile_photo\": \"everyone\",\n    \"bio\": \"everyone\",\n    \"direct_messages\": \"everyone\"\n}"},
+            "url": {"raw": "{{base_url}}/users/privacy", "host": ["{{base_url}}"], "path": ["users", "privacy"]},
+            "description": "✅ المتوقع: privacy_settings محدثة"
+          }
+        },
+        {
+          "name": "05. Search Users",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Search OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Found Sara', () => pm.expect(r.data.some(u => u.username === 'sara_test')).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/users/search?q=sara", "host": ["{{base_url}}"], "path": ["users", "search"], "query": [{"key": "q", "value": "sara"}]},
+            "description": "✅ المتوقع: قائمة المستخدمين اللي فيهم sara"
+          }
+        },
+        {
+          "name": "06. View Sara Profile",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Profile Found', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Is Sara', () => pm.expect(r.data.username).to.equal('sara_test'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/users/sara_test", "host": ["{{base_url}}"], "path": ["users", "sara_test"]},
+            "description": "✅ المتوقع: بيانات Sara العامة"
+          }
+        },
+        {
+          "name": "07. Mute Sara (60 min)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Muted', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"minutes\": 60\n}"},
+            "url": {"raw": "{{base_url}}/users/sara_test/mute", "host": ["{{base_url}}"], "path": ["users", "sara_test", "mute"]},
+            "description": "✅ المتوقع: تم كتم Sara لمدة 60 دقيقة"
+          }
+        },
+        {
+          "name": "08. Unmute Sara",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Unmuted', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/users/sara_test/mute", "host": ["{{base_url}}"], "path": ["users", "sara_test", "mute"]},
+            "description": "✅ المتوقع: إلغاء كتم Sara"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 03 - Conversations",
+      "item": [
+        {
+          "name": "01. Start Direct Conversation with Sara ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Conversation Created', () => pm.expect(r.status).to.be.true);",
+            "if (r.data && r.data.id) {",
+            "  pm.collectionVariables.set('conversation_id', r.data.id);",
+            "  pm.test('✅ Conversation ID saved: ' + r.data.id, () => true);",
+            "  console.log('Conversation ID:', r.data.id);",
+            "}",
+            "pm.test('✅ Type is direct', () => pm.expect(r.data.type).to.equal('direct'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"type\": \"direct\",\n    \"user_id\": 2\n}"},
+            "url": {"raw": "{{base_url}}/conversations", "host": ["{{base_url}}"], "path": ["conversations"]},
+            "description": "✅ المتوقع: محادثة مباشرة جديدة مع Sara\n✅ conversation_id يتحفظ تلقائياً\n⚠️ لو المحادثة موجودة هيرجع نفس الـ ID"
+          }
+        },
+        {
+          "name": "02. List My Conversations",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ List OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has conversations', () => pm.expect(r.data).to.be.an('array').that.is.not.empty);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/conversations", "host": ["{{base_url}}"], "path": ["conversations"]},
+            "description": "✅ المتوقع: قائمة بكل المحادثات"
+          }
+        },
+        {
+          "name": "03. Get Conversation Details",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Details OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has participants', () => pm.expect(r.data.participants).to.be.an('array'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}"]},
+            "description": "✅ المتوقع: تفاصيل المحادثة + المشاركين"
+          }
+        },
+        {
+          "name": "04. Send Typing Indicator",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Typing sent', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"is_typing\": true\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/typing", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "typing"]},
+            "description": "✅ المتوقع: status true\n🔴 Real-time: Sara المفروض تشوف typing indicator"
+          }
+        },
+        {
+          "name": "05. Mark as Read",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Marked as read', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/read", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "read"]},
+            "description": "✅ المتوقع: تعليم المحادثة كمقروءة"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📨 04 - Messages",
+      "item": [
+        {
+          "name": "01. Send Text Message ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Message Sent', () => pm.expect(r.status).to.be.true);",
+            "if (r.data && r.data.id) {",
+            "  pm.collectionVariables.set('message_id', r.data.id);",
+            "  pm.test('✅ Message ID saved: ' + r.data.id, () => true);",
+            "}",
+            "pm.test('✅ Has sender', () => pm.expect(r.data.sender).to.not.be.null);",
+            "pm.test('✅ reads_count is 1', () => pm.expect(r.data.reads_count).to.equal(1));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"body\": \"مرحباً يا Sara! هذه رسالة اختبار من Postman 🚀\"\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages"]},
+            "description": "✅ المتوقع:\n- الرسالة تتبعت\n- reads_count = 1 (Ahmed قرأها)\n- message_id يتحفظ تلقائياً\n🔴 Real-time: Sara تستقبل الرسالة فوراً"
+          }
+        },
+        {
+          "name": "02. Get Messages",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Messages OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has messages', () => pm.expect(r.data).to.be.an('array').that.is.not.empty);",
+            "pm.test('✅ Has pagination', () => pm.expect(r.meta).to.have.property('total'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages?page=1", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages"], "query": [{"key": "page", "value": "1"}]},
+            "description": "✅ المتوقع: قائمة الرسائل مع pagination"
+          }
+        },
+        {
+          "name": "03. Send Reply Message",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Reply Sent', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has reply_to', () => pm.expect(r.data.reply_to).to.not.be.null);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"body\": \"هذا رد على رسالتي السابقة!\",\n    \"reply_to_id\": {{message_id}}\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages"]},
+            "description": "✅ المتوقع: رسالة فيها reply_to مع بيانات الرسالة الأصلية"
+          }
+        },
+        {
+          "name": "04. Send Message with Mention",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Mention Sent', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has mentions', () => pm.expect(r.data.mentions).to.include(2));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"body\": \"@sara_test هل يمكنك مراجعة هذا؟ 👀\",\n    \"mentions\": [2]\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages"]},
+            "description": "✅ المتوقع: رسالة فيها mention لـ Sara\n🔔 Sara المفروض تستقبل Mention notification"
+          }
+        },
+        {
+          "name": "05. React to Message (👍)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Reaction added', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Action is added', () => pm.expect(r.data.action).to.equal('added'));",
+            "pm.test('✅ Emoji is 👍', () => pm.expect(r.data.emoji).to.equal('👍'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"emoji\": \"👍\"\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages/{{message_id}}/react", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages", "{{message_id}}", "react"]},
+            "description": "✅ المتوقع: action = added\n🔄 لو اتبعتت تاني: action = removed (Toggle)"
+          }
+        },
+        {
+          "name": "06. React Again (Toggle - Remove 👍)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Reaction removed', () => pm.expect(r.data.action).to.equal('removed'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"emoji\": \"👍\"\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages/{{message_id}}/react", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages", "{{message_id}}", "react"]},
+            "description": "✅ المتوقع: action = removed (Toggle)"
+          }
+        },
+        {
+          "name": "07. Pin Message",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Message Pinned', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ is_pinned is true', () => pm.expect(r.data.is_pinned).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages/{{message_id}}/pin", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages", "{{message_id}}", "pin"]},
+            "description": "✅ المتوقع: is_pinned = true"
+          }
+        },
+        {
+          "name": "08. Get Pinned Messages",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Pinned OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has pinned messages', () => pm.expect(r.data.length).to.be.greaterThan(0));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages/pinned", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages", "pinned"]},
+            "description": "✅ المتوقع: الرسائل المثبتة في المحادثة"
+          }
+        },
+        {
+          "name": "09. Edit Message",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Edit OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ is_edited is true', () => pm.expect(r.data.is_edited).to.be.true);",
+            "pm.test('✅ Body updated', () => pm.expect(r.data.body).to.include('بعد التعديل'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"body\": \"مرحباً يا Sara! هذه الرسالة بعد التعديل ✏️\"\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages/{{message_id}}", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages", "{{message_id}}"]},
+            "description": "✅ المتوقع: is_edited = true + edited_at"
+          }
+        },
+        {
+          "name": "10. Forward Message",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Forwarded', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has forwarded_from', () => pm.expect(r.data.body).to.not.be.empty);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"target_conversation_id\": {{conversation_id}}\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages/{{message_id}}/forward", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages", "{{message_id}}", "forward"]},
+            "description": "✅ المتوقع: رسالة جديدة بنفس المحتوى"
+          }
+        },
+        {
+          "name": "11. Search Messages",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Search OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Meta has query', () => pm.expect(r.meta.query).to.equal('مرحباً'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/search/messages?q=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B", "host": ["{{base_url}}"], "path": ["search", "messages"], "query": [{"key": "q", "value": "مرحباً"}]},
+            "description": "✅ المتوقع: الرسائل اللي فيها كلمة مرحباً"
+          }
+        },
+        {
+          "name": "12. Sara Sends Reply ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Sara Reply Sent', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Sender is Sara', () => pm.expect(r.data.sender.username).to.equal('sara_test'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"body\": \"أهلاً يا Ahmed! وصلتني رسالتك 😊\"\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages"]},
+            "description": "✅ المتوقع:\n- الرسالة تتبعت من Sara\n🔴 Real-time: Ahmed يستقبل الرسالة\n🔔 Ahmed يستقبل notification"
+          }
+        },
+        {
+          "name": "13. Delete Message (Soft Delete)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Deleted', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages/{{message_id}}", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages", "{{message_id}}"]},
+            "description": "✅ المتوقع: Soft Delete (مش هيتمسح من DB)\n🔴 Real-time: الرسالة تختفي عند Sara"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📁 05 - Media",
+      "item": [
+        {
+          "name": "01. Upload Image ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Image Uploaded', () => pm.expect(r.status).to.be.true);",
+            "if (r.data) {",
+            "  pm.collectionVariables.set('media_id', r.data.id);",
+            "  pm.test('✅ Has URL', () => pm.expect(r.data.url).to.include('storage'));",
+            "  pm.test('✅ Has thumbnail', () => pm.expect(r.data.thumbnail_url).to.not.be.null);",
+            "  pm.test('✅ Converted to WebP', () => pm.expect(r.data.url).to.include('.webp'));",
+            "  pm.test('✅ Has dimensions', () => pm.expect(r.data.width).to.be.greaterThan(0));",
+            "}"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "formdata", "formdata": [
+              {"key": "file", "type": "file", "src": "", "description": "⚠️ اختار صورة JPG أو PNG"},
+              {"key": "type", "value": "image", "type": "text"}
+            ]},
+            "url": {"raw": "{{base_url}}/media/upload", "host": ["{{base_url}}"], "path": ["media", "upload"]},
+            "description": "✅ المتوقع:\n- رفع الصورة\n- تحويلها لـ WebP تلقائياً\n- عمل Thumbnail\n- حفظ الأبعاد\n⚠️ اختار صورة من جهازك في Body > form-data"
+          }
+        },
+        {
+          "name": "02. Upload Voice File ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Voice Uploaded', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Type is voice', () => pm.expect(r.data.type).to.equal('voice'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "formdata", "formdata": [
+              {"key": "file", "type": "file", "src": "", "description": "⚠️ اختار ملف MP3 أو M4A أو WAV"},
+              {"key": "type", "value": "voice", "type": "text"}
+            ]},
+            "url": {"raw": "{{base_url}}/media/upload", "host": ["{{base_url}}"], "path": ["media", "upload"]},
+            "description": "✅ المتوقع: رفع ملف صوتي بنجاح\n⚠️ اختار ملف صوتي من جهازك"
+          }
+        },
+        {
+          "name": "03. Upload Document",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Document Uploaded', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Type is document', () => pm.expect(r.data.type).to.equal('document'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "formdata", "formdata": [
+              {"key": "file", "type": "file", "src": "", "description": "⚠️ اختار PDF أو DOC أو TXT"},
+              {"key": "type", "value": "document", "type": "text"}
+            ]},
+            "url": {"raw": "{{base_url}}/media/upload", "host": ["{{base_url}}"], "path": ["media", "upload"]},
+            "description": "✅ المتوقع: رفع مستند بنجاح"
+          }
+        },
+        {
+          "name": "04. Reject Invalid File Type",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('✅ Correctly Rejected (422)', () => pm.expect(pm.response.code).to.equal(422));",
+            "const r = pm.response.json();",
+            "pm.test('✅ Has error message', () => pm.expect(r.status).to.be.false);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "formdata", "formdata": [
+              {"key": "file", "type": "file", "src": "", "description": "⚠️ اختار ملف PHP أو EXE"},
+              {"key": "type", "value": "image", "type": "text"}
+            ]},
+            "url": {"raw": "{{base_url}}/media/upload", "host": ["{{base_url}}"], "path": ["media", "upload"]},
+            "description": "✅ المتوقع: رفض الملف بـ 422\n⚠️ اختار ملف PHP أو EXE لاختبار الـ Validation"
+          }
+        },
+        {
+          "name": "05. Get Media Details",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Media Found', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has URL', () => pm.expect(r.data.url).to.not.be.empty);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/media/{{media_id}}", "host": ["{{base_url}}"], "path": ["media", "{{media_id}}"]},
+            "description": "✅ المتوقع: تفاصيل الملف المرفوع"
+          }
+        },
+        {
+          "name": "06. Send Message with Image ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Message with Image Sent', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has media', () => pm.expect(r.data.media).to.be.an('array').that.is.not.empty);",
+            "pm.test('✅ Media has URL', () => pm.expect(r.data.media[0].url).to.include('storage'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"type\": \"image\",\n    \"body\": null,\n    \"media_ids\": [{{media_id}}]\n}"},
+            "url": {"raw": "{{base_url}}/conversations/{{conversation_id}}/messages", "host": ["{{base_url}}"], "path": ["conversations", "{{conversation_id}}", "messages"]},
+            "description": "✅ المتوقع:\n- رسالة فيها media\n- media[0].url شغال\n🔴 Real-time: Sara تستقبل الصورة"
+          }
+        },
+        {
+          "name": "07. Get Conversation Media",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Media List OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has media', () => pm.expect(r.data).to.be.an('array').that.is.not.empty);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/media/conversation/{{conversation_id}}?type=image", "host": ["{{base_url}}"], "path": ["media", "conversation", "{{conversation_id}}"], "query": [{"key": "type", "value": "image"}]},
+            "description": "✅ المتوقع: كل الصور في المحادثة"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 06 - Groups",
+      "item": [
+        {
+          "name": "01. Create Group ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Group Created', () => pm.expect(r.status).to.be.true);",
+            "if (r.data && r.data.id) {",
+            "  pm.collectionVariables.set('group_id', r.data.id);",
+            "  pm.test('✅ Group ID saved: ' + r.data.id, () => true);",
+            "}",
+            "pm.test('✅ My role is owner', () => pm.expect(r.data.my_role).to.equal('owner'));",
+            "pm.test('✅ Has settings', () => pm.expect(r.data.settings).to.not.be.null);",
+            "pm.test('✅ Has permissions', () => pm.expect(r.data.my_permissions.can_manage_settings).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"name\": \"فريق التطوير\",\n    \"description\": \"مجموعة الـ Backend Team\",\n    \"type\": \"private\",\n    \"max_members\": 50,\n    \"members\": [2]\n}"},
+            "url": {"raw": "{{base_url}}/groups", "host": ["{{base_url}}"], "path": ["groups"]},
+            "description": "✅ المتوقع:\n- مجموعة جديدة\n- my_role = owner\n- Sara تنضم تلقائياً\n- group_id يتحفظ"
+          }
+        },
+        {
+          "name": "02. Get Group Details",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Group Found', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Members count >= 2', () => pm.expect(r.data.members_count).to.be.greaterThanOrEqual(2));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/groups/{{group_id}}", "host": ["{{base_url}}"], "path": ["groups", "{{group_id}}"]},
+            "description": "✅ المتوقع: تفاصيل المجموعة"
+          }
+        },
+        {
+          "name": "03. Get Group Members",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Members OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Ahmed is owner', () => pm.expect(r.data.some(m => m.role === 'owner')).to.be.true);",
+            "pm.test('✅ Sara is member', () => pm.expect(r.data.some(m => m.user.username === 'sara_test')).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/groups/{{group_id}}/members", "host": ["{{base_url}}"], "path": ["groups", "{{group_id}}", "members"]},
+            "description": "✅ المتوقع: Ahmed (owner) + Sara (member)"
+          }
+        },
+        {
+          "name": "04. Change Sara Role to Moderator",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Role Changed', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Role is moderator', () => pm.expect(r.data.role).to.equal('moderator'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"role\": \"moderator\"\n}"},
+            "url": {"raw": "{{base_url}}/groups/{{group_id}}/members/2/role", "host": ["{{base_url}}"], "path": ["groups", "{{group_id}}", "members", "2", "role"]},
+            "description": "✅ المتوقع: Sara بقت moderator"
+          }
+        },
+        {
+          "name": "05. Mute Sara in Group (30 min)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Muted in Group', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"minutes\": 30\n}"},
+            "url": {"raw": "{{base_url}}/groups/{{group_id}}/members/2/mute", "host": ["{{base_url}}"], "path": ["groups", "{{group_id}}", "members", "2", "mute"]},
+            "description": "✅ المتوقع: Sara متكتمة لمدة 30 دقيقة"
+          }
+        },
+        {
+          "name": "06. Unmute Sara in Group",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Unmuted in Group', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/groups/{{group_id}}/members/2/mute", "host": ["{{base_url}}"], "path": ["groups", "{{group_id}}", "members", "2", "mute"]},
+            "description": "✅ المتوقع: إلغاء كتم Sara"
+          }
+        },
+        {
+          "name": "07. Update Group Settings",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Settings Updated', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ who_can_send is admins', () => pm.expect(r.data.settings.who_can_send_messages).to.equal('admins'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"settings\": {\n        \"who_can_send_messages\": \"admins\",\n        \"join_approval\": true\n    }\n}"},
+            "url": {"raw": "{{base_url}}/groups/{{group_id}}", "host": ["{{base_url}}"], "path": ["groups", "{{group_id}}"]},
+            "description": "✅ المتوقع: إعدادات محدثة"
+          }
+        },
+        {
+          "name": "08. Invite User to Group ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Invitation Sent', () => pm.expect(r.status).to.be.true);",
+            "if (r.data && r.data.token) {",
+            "  pm.collectionVariables.set('invite_token', r.data.token);",
+            "  pm.test('✅ Token saved', () => pm.expect(r.data.token).to.not.be.empty);",
+            "  pm.test('✅ Has expiry', () => pm.expect(r.data.expires_at).to.not.be.empty);",
+            "  console.log('Invite Token:', r.data.token);",
+            "}"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"user_id\": 2\n}"},
+            "url": {"raw": "{{base_url}}/groups/{{group_id}}/invite", "host": ["{{base_url}}"], "path": ["groups", "{{group_id}}", "invite"]},
+            "description": "✅ المتوقع: invitation token\n⚠️ Sara موجودة بالفعل - جرب مع user آخر\n🔔 Sara تستقبل notification"
+          }
+        },
+        {
+          "name": "09. Get My Invitations (Sara)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Invitations OK', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "url": {"raw": "{{base_url}}/invitations", "host": ["{{base_url}}"], "path": ["invitations"]},
+            "description": "✅ المتوقع: قائمة الدعوات المعلقة لـ Sara"
+          }
+        },
+        {
+          "name": "10. Search Public Groups",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Search OK', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/groups/search?q=%D9%81%D8%B1%D9%8A%D9%82", "host": ["{{base_url}}"], "path": ["groups", "search"], "query": [{"key": "q", "value": "فريق"}]},
+            "description": "✅ المتوقع: المجموعات العامة فقط (private مش هتظهر)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 07 - Notifications",
+      "item": [
+        {
+          "name": "01. Get Ahmed Notifications",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Notifications OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has unread_count', () => pm.expect(r.meta).to.have.property('unread_count'));",
+            "if (r.data.length > 0) {",
+            "  pm.collectionVariables.set('notification_id', r.data[0].id);",
+            "  console.log('First notification ID:', r.data[0].id);",
+            "}"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/notifications", "host": ["{{base_url}}"], "path": ["notifications"]},
+            "description": "✅ المتوقع: إشعارات Ahmed"
+          }
+        },
+        {
+          "name": "02. Get Sara Notifications ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Sara Notifications OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Sara has notifications', () => pm.expect(r.meta.total).to.be.greaterThan(0));",
+            "pm.test('✅ Sara has unread', () => pm.expect(r.meta.unread_count).to.be.greaterThan(0));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "url": {"raw": "{{base_url}}/notifications?unread_only=true", "host": ["{{base_url}}"], "path": ["notifications"], "query": [{"key": "unread_only", "value": "true"}]},
+            "description": "✅ المتوقع: Sara عندها إشعارات من رسائل Ahmed\n⚠️ لازم Queue Worker شغال"
+          }
+        },
+        {
+          "name": "03. Get Unread Count",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Count OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has count', () => pm.expect(r.data).to.have.property('unread_count'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "url": {"raw": "{{base_url}}/notifications/unread-count", "host": ["{{base_url}}"], "path": ["notifications", "unread-count"]},
+            "description": "✅ المتوقع: عدد الإشعارات غير المقروءة"
+          }
+        },
+        {
+          "name": "04. Mark All as Read",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Marked as Read', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "body": {"mode": "raw", "raw": "{}"},
+            "url": {"raw": "{{base_url}}/notifications/read", "host": ["{{base_url}}"], "path": ["notifications", "read"]},
+            "description": "✅ المتوقع: كل إشعارات Sara كمقروءة"
+          }
+        },
+        {
+          "name": "05. Update Notification Preferences",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Preferences Updated', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Email disabled', () => pm.expect(r.data.notification_preferences.email).to.be.false);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"email\": false,\n    \"push\": true,\n    \"in_app\": true,\n    \"mentions\": true,\n    \"messages\": true,\n    \"groups\": true,\n    \"calls\": true\n}"},
+            "url": {"raw": "{{base_url}}/notifications/preferences", "host": ["{{base_url}}"], "path": ["notifications", "preferences"]},
+            "description": "✅ المتوقع: preferences محدثة"
+          }
+        },
+        {
+          "name": "06. Notification Stats",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Stats OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has total', () => pm.expect(r.data).to.have.property('total'));",
+            "pm.test('✅ Has by_type', () => pm.expect(r.data).to.have.property('by_type'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "url": {"raw": "{{base_url}}/notifications/stats", "host": ["{{base_url}}"], "path": ["notifications", "stats"]},
+            "description": "✅ المتوقع: إحصائيات الإشعارات by type"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📞 08 - Calls",
+      "item": [
+        {
+          "name": "00. Clear Active Calls (if any)",
+          "event": [{"listen": "prerequest", "script": {"exec": [], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/calls/active/{{conversation_id}}", "host": ["{{base_url}}"], "path": ["calls", "active", "{{conversation_id}}"]},
+            "description": "⚠️ لو رجع call نشط، اعمل End عليه الأول"
+          }
+        },
+        {
+          "name": "01. Initiate Voice Call ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Call Initiated', () => pm.expect(r.status).to.be.true);",
+            "if (r.data && r.data.id) {",
+            "  pm.collectionVariables.set('call_id', r.data.id);",
+            "  pm.test('✅ Call ID saved: ' + r.data.id, () => true);",
+            "}",
+            "pm.test('✅ Status is ringing', () => pm.expect(r.data.status).to.equal('ringing'));",
+            "pm.test('✅ Type is voice', () => pm.expect(r.data.type).to.equal('voice'));",
+            "pm.test('✅ Ahmed joined', () => pm.expect(r.data.participants[0].status).to.equal('joined'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"conversation_id\": {{conversation_id}},\n    \"type\": \"voice\"\n}"},
+            "url": {"raw": "{{base_url}}/calls/initiate", "host": ["{{base_url}}"], "path": ["calls", "initiate"]},
+            "description": "✅ المتوقع:\n- status = ringing\n- Ahmed في participants\n- call_id يتحفظ\n🔴 Real-time: Sara تستقبل call.initiated event"
+          }
+        },
+        {
+          "name": "02. Sara Answers Call ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Call Answered', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Status is ongoing', () => pm.expect(r.data.status).to.equal('ongoing'));",
+            "pm.test('✅ started_at set', () => pm.expect(r.data.started_at).to.not.be.null);",
+            "pm.test('✅ Both participants joined', () => {",
+            "  const joined = r.data.participants.filter(p => p.status === 'joined');",
+            "  pm.expect(joined.length).to.equal(2);",
+            "});"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "url": {"raw": "{{base_url}}/calls/{{call_id}}/answer", "host": ["{{base_url}}"], "path": ["calls", "{{call_id}}", "answer"]},
+            "description": "✅ المتوقع:\n- status = ongoing\n- started_at محدد\n- 2 participants\n🔴 Real-time: Ahmed يستقبل call.answered"
+          }
+        },
+        {
+          "name": "03. WebRTC Signal - SDP Offer",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Signal Sent', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"to_user_id\": 2,\n    \"signal_type\": \"offer\",\n    \"payload\": {\n        \"type\": \"offer\",\n        \"sdp\": \"v=0\\r\\no=- 12345 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\n\"\n    }\n}"},
+            "url": {"raw": "{{base_url}}/calls/{{call_id}}/signal", "host": ["{{base_url}}"], "path": ["calls", "{{call_id}}", "signal"]},
+            "description": "✅ المتوقع: status true\n🔴 Real-time: Sara تستقبل webrtc.signal"
+          }
+        },
+        {
+          "name": "04. WebRTC Signal - ICE Candidate",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ ICE Signal Sent', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"to_user_id\": 2,\n    \"signal_type\": \"ice-candidate\",\n    \"payload\": {\n        \"candidate\": \"candidate:1 1 UDP 2013266431 192.168.1.1 54321 typ host\",\n        \"sdpMid\": \"0\",\n        \"sdpMLineIndex\": 0\n    }\n}"},
+            "url": {"raw": "{{base_url}}/calls/{{call_id}}/signal", "host": ["{{base_url}}"], "path": ["calls", "{{call_id}}", "signal"]},
+            "description": "✅ المتوقع: ICE Candidate بيتبعت لـ Sara"
+          }
+        },
+        {
+          "name": "05. Toggle Mute",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Mute Toggled', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ is_muted is true', () => pm.expect(r.data.is_muted).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/calls/{{call_id}}/toggle-mute", "host": ["{{base_url}}"], "path": ["calls", "{{call_id}}", "toggle-mute"]},
+            "description": "✅ المتوقع: is_muted = true\n🔄 لو اتبعتت تاني: is_muted = false"
+          }
+        },
+        {
+          "name": "06. Toggle Unmute",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Unmuted', () => pm.expect(r.data.is_muted).to.be.false);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/calls/{{call_id}}/toggle-mute", "host": ["{{base_url}}"], "path": ["calls", "{{call_id}}", "toggle-mute"]},
+            "description": "✅ المتوقع: is_muted = false"
+          }
+        },
+        {
+          "name": "07. End Call ⭐",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Call Ended', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Status is ended', () => pm.expect(r.data.status).to.equal('ended'));",
+            "pm.test('✅ ended_at set', () => pm.expect(r.data.ended_at).to.not.be.null);",
+            "pm.test('✅ duration >= 0', () => pm.expect(r.data.duration).to.be.at.least(0));",
+            "pm.test('✅ Both left', () => {",
+            "  const left = r.data.participants.filter(p => p.status === 'left');",
+            "  pm.expect(left.length).to.equal(2);",
+            "});"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/calls/{{call_id}}/end", "host": ["{{base_url}}"], "path": ["calls", "{{call_id}}", "end"]},
+            "description": "✅ المتوقع:\n- status = ended\n- duration محسوبة\n- كل المشاركين status = left\n🔴 Real-time: Sara تستقبل call.ended"
+          }
+        },
+        {
+          "name": "08. Initiate Video Call",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Video Call Initiated', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Type is video', () => pm.expect(r.data.type).to.equal('video'));",
+            "if (r.data) pm.collectionVariables.set('call_id', r.data.id);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"conversation_id\": {{conversation_id}},\n    \"type\": \"video\"\n}"},
+            "url": {"raw": "{{base_url}}/calls/initiate", "host": ["{{base_url}}"], "path": ["calls", "initiate"]},
+            "description": "✅ المتوقع: مكالمة فيديو جديدة"
+          }
+        },
+        {
+          "name": "09. Reject Call (Sara)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Call Rejected', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Status is rejected', () => pm.expect(r.data.status).to.equal('rejected'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token_sara}}"}],
+            "url": {"raw": "{{base_url}}/calls/{{call_id}}/reject", "host": ["{{base_url}}"], "path": ["calls", "{{call_id}}", "reject"]},
+            "description": "✅ المتوقع: status = rejected\n🔴 Real-time: Ahmed يستقبل call.ended"
+          }
+        },
+        {
+          "name": "10. Call History",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ History OK', () => pm.expect(r.status).to.be.true);",
+            "pm.test('✅ Has calls', () => pm.expect(r.data).to.be.an('array').that.is.not.empty);",
+            "const voiceCall = r.data.find(c => c.type === 'voice' && c.status === 'ended');",
+            "pm.test('✅ Has ended voice call', () => pm.expect(voiceCall).to.not.be.undefined);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/calls/history", "host": ["{{base_url}}"], "path": ["calls", "history"]},
+            "description": "✅ المتوقع: سجل كل المكالمات"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏥 09 - Health & Security",
+      "item": [
+        {
+          "name": "01. API Ping",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ API is up', () => pm.expect(r.status).to.equal('ok'));",
+            "pm.test('✅ Service name correct', () => pm.expect(r.service).to.equal('NexusPlatform API'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {"raw": "http://localhost:8000/api/ping", "host": ["http://localhost:8000"], "path": ["api", "ping"]},
+            "description": "✅ المتوقع: status = ok"
+          }
+        },
+        {
+          "name": "02. Test Unauthenticated (should fail)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('✅ Correctly returns 401', () => pm.expect(pm.response.code).to.equal(401));",
+            "const r = pm.response.json();",
+            "pm.test('✅ Unauthenticated message', () => pm.expect(r.message).to.include('Unauthenticated'));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {"raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"]},
+            "description": "✅ المتوقع: 401 Unauthenticated"
+          }
+        },
+        {
+          "name": "03. Test Validation (wrong data)",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('✅ Correctly returns 422', () => pm.expect(pm.response.code).to.equal(422));",
+            "const r = pm.response.json();",
+            "pm.test('✅ Has validation errors', () => pm.expect(r.status).to.be.false);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n    \"name\": \"A\",\n    \"username\": \"x\",\n    \"email\": \"not-an-email\",\n    \"password\": \"123\",\n    \"password_confirmation\": \"456\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"]},
+            "description": "✅ المتوقع: 422 مع رسائل الخطأ بالعربي"
+          }
+        },
+        {
+          "name": "04. DevConsole Health",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ DB Connected', () => pm.expect(r.database.status).to.be.true);",
+            "pm.test('✅ Redis Connected', () => pm.expect(r.redis.status).to.be.true);",
+            "pm.test('✅ Storage OK', () => pm.expect(r.storage.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {"raw": "http://localhost:8000/devtools/api/health?token=nexus-dev-console-2026", "host": ["http://localhost:8000"], "path": ["devtools", "api", "health"], "query": [{"key": "token", "value": "nexus-dev-console-2026"}]},
+            "description": "✅ المتوقع: كل الـ services خضراء"
+          }
+        },
+        {
+          "name": "05. DevConsole System Doctor",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Doctor OK', () => pm.expect(r.score).to.be.greaterThanOrEqual(60));",
+            "console.log('System Score:', r.score + '%');",
+            "if (r.issues.length > 0) console.log('Issues:', JSON.stringify(r.issues));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {"raw": "http://localhost:8000/devtools/api/doctor?token=nexus-dev-console-2026", "host": ["http://localhost:8000"], "path": ["devtools", "api", "doctor"], "query": [{"key": "token", "value": "nexus-dev-console-2026"}]},
+            "description": "✅ المتوقع: score >= 80% + كل الـ checks خضراء"
+          }
+        },
+        {
+          "name": "06. DevConsole Queue Stats",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Queue Stats OK', () => pm.expect(r).to.have.property('failed'));",
+            "pm.test('✅ No failed jobs', () => pm.expect(r.failed).to.equal(0));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {"raw": "http://localhost:8000/devtools/api/queue?token=nexus-dev-console-2026", "host": ["http://localhost:8000"], "path": ["devtools", "api", "queue"], "query": [{"key": "token", "value": "nexus-dev-console-2026"}]},
+            "description": "✅ المتوقع: failed = 0 + pending = 0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚪 10 - Logout",
+      "item": [
+        {
+          "name": "01. Logout Ahmed",
+          "event": [{"listen": "test", "script": {"exec": [
+            "const r = pm.response.json();",
+            "pm.test('✅ Logged Out', () => pm.expect(r.status).to.be.true);"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {"mode": "raw", "raw": "{\n    \"all_devices\": false\n}"},
+            "url": {"raw": "{{base_url}}/auth/logout", "host": ["{{base_url}}"], "path": ["auth", "logout"]},
+            "description": "✅ المتوقع: logout + token محذوف"
+          }
+        },
+        {
+          "name": "02. Verify Token Invalid After Logout",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('✅ Token rejected after logout', () => pm.expect(pm.response.code).to.equal(401));"
+          ], "type": "text/javascript"}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"]},
+            "description": "✅ المتوقع: 401 - الـ token انتهى بعد الـ logout"
+          }
+        }
+      ]
+    }
+  ]
+}
