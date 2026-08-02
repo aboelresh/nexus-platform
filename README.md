@@ -100,7 +100,7 @@ NexusPlatform is a **full-featured enterprise communication backend** built with
 
 **1. Clone & install:**
 ```bash
-git clone https://github.com/yourusername/nexus-platform.git
+git clone https://github.com/aboelresh/nexus-platform.git
 cd nexus-platform
 composer install
 ```

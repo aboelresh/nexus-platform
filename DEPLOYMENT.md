@@ -58,7 +58,7 @@ sudo apt install php8.2-{mysql,mbstring,xml,curl,gd,redis,zip,bcmath}
 
 ```bash
 
-git clone https://github.com/yourusername/nexus-platform.git /var/www/nexus-platform
+git clone https://github.com/aboelresh/nexus-platform.git /var/www/nexus-platform
 
 cd /var/www/nexus-platform
 
